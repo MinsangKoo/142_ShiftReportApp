@@ -1,0 +1,18 @@
+#root {
+    text-align: left;
+  }
+  
+  .input-group {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  
+  .submit {
+    margin-top: 1rem;
+  }
+  
+  .submit:hover {
+    border-color: #d6d8fa;
+  }
