@@ -8,7 +8,7 @@ import { View, Text } from "react-native";
 const FileUploader = () => {
   const [file, setFile] = useState<File | null>(null);
   const [date, setDate] = useState(moment().format("MM-DD"));
-  const [shift, setShift] = useState(null);
+  const [shift, setShift] = useState("days");
   const [showReport, setShowReport] = useState(false);
   const [report, setReport] = useState("");
 
@@ -18,24 +18,39 @@ const FileUploader = () => {
       var row = json[i];
       column1.push(row[0]);
     }
+    const days_symbol = ["D", "OJD"];
+    const swings_symbol = ["S", "OJS"];
+    const mids_symbol = ["M", "OJM"];
+    var symbols = days_symbol;
+
+    switch (shift) {
+      case "days":
+        symbols = days_symbol;
+        break;
+      case "swings":
+        symbols = swings_symbol;
+        break;
+      case "mids":
+        symbols = mids_symbol;
+        break;
+    }
 
     var report_date = moment(new Date(date)).format("DD");
-    const swings = column1;
     const shifts = [];
     const ojt = [];
     for (var i = 0; i < column1.length; i++) {
-      if (json[i][Number(report_date)] == "S") {
+      if (json[i][Number(report_date)] == symbols[0]) {
         shifts.push([column1[i], json[i][Number(report_date)]]);
-      } else if (json[i][Number(report_date)] == "OJS") {
+      } else if (json[i][Number(report_date)] == symbols[1]) {
         ojt.push(column1[i]);
       }
     }
-
+    console.log(shifts);
     //get 막짬 and OJT's
     var mak_jjam;
 
     for (var i = shifts.length - 1; i >= 0; i--) {
-      if (shifts[i][1] == "S") {
+      if (shifts[i][1] == symbols[0]) {
         mak_jjam = shifts[i][0];
         break;
       }
@@ -45,7 +60,7 @@ const FileUploader = () => {
     //get 1짬
     var one_jjam;
     for (var i = 0; i < shifts.length; i++) {
-      if (shifts[i][1] == "S") {
+      if (shifts[i][1] == symbols[0]) {
         one_jjam = shifts[i][0];
         break;
       }
@@ -139,6 +154,11 @@ ${ojt_list}
     setDate(newDate);
   };
 
+  const handleShiftChange = (e) => {
+    console.log(e.target.value);
+    setShift(e.target.value);
+  };
+
   const handleUpload = async () => {
     const data = await file.arrayBuffer();
     const workbook = XLSX.read(data);
@@ -158,6 +178,11 @@ ${ojt_list}
       <div className="input-group">
         <input id="file" type="file" onChange={handleFileChange} />
         <input id="date" type="date" onChange={(e) => handleDateChange(e)} />
+        <select id="shift" onChange={(e) => handleShiftChange(e)}>
+          <option value="days">Days</option>
+          <option value="swings">Swings</option>
+          <option value="mids">Mids</option>
+        </select>
       </div>
       {file && (
         <section>
